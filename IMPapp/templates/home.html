@@ -1,7 +1,51 @@
 {% extends "template.html" %}{% block title %}Home{% endblock %}
 {% block content %}
-    <div class="jumbotron mt-4">
-        <h2>Dashboard</h2>
-        <p>This is the home page of the Interface Monitoring Portal. Use the navigation menu to access different sections.</p>
-    </div>
+    <form method="post" action="{% url 'createDummyAlerts' %}">
+        <button class="btn btn-primary mb-3" type="submit">
+        {% csrf_token %}
+        Create Dummy Alerts</button>
+    </form>
+    {% for alert in alerts %}
+        <div class="
+            {% if alert.alert_type.name == 'minor' %}alert-info
+            {% elif alert.alert_type.name == 'warning' %}alert-warning
+            {% elif alert.alert_type.name == 'critical' %}alert-danger
+            {% endif %}
+            p-3 mb-2 rounded">
+            <table class="w-100">
+                <tr>
+                    <td>
+                        <strong>{{ alert.interface_name }}</strong> - {{ alert.alert_type.description }} at {{ alert.timestamp }}
+                        <span class="badge badge-secondary">{{ alert.status }}</span>
+                        <p>{{ alert.description }}</p>
+                    </td>
+                    <td class="text-right align-middle">
+                        {% if alert.status == 'NEW' %}
+                            <form method="post" action="{% url 'acknowledgeAlert' alert.id %}">
+                                <button class="
+                                {% if alert.alert_type.name == 'minor' %}btn btn-info
+                                {% elif alert.alert_type.name == 'warning' %}btn btn-warning
+                                {% elif alert.alert_type.name == 'critical' %}btn btn-danger
+                                {% endif %}" 
+                                type="submit">
+                                {% csrf_token %}
+                                Acknowledge</button>
+                            </form>
+                        {% else %}
+                            <form method="post" action="{% url 'removeAlert' alert.id %}">
+                                <button class="
+                                {% if alert.alert_type.name == 'minor' %}btn btn-info
+                                {% elif alert.alert_type.name == 'warning' %}btn btn-warning
+                                {% elif alert.alert_type.name == 'critical' %}btn btn-danger
+                                {% endif %}" 
+                                type="submit">
+                                {% csrf_token %}
+                                Remove</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    {% endfor %}
 {% endblock %}
