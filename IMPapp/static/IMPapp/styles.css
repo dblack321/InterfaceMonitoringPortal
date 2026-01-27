@@ -25,3 +25,13 @@ main {
     background-color: #0057B8;
     color: white;
 }
+
+.bg-innovia-light {
+    background-color: #e1e5eb;
+}
+
+.alert-panel {
+    background-color: white;
+    border-radius: 20px;
+    padding: 20px;
+}

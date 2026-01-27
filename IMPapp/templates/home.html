@@ -1,51 +1,81 @@
 {% extends "template.html" %}{% block title %}Home{% endblock %}
 {% block content %}
-    <form method="post" action="{% url 'createDummyAlerts' %}">
-        <button class="btn btn-primary mb-3" type="submit">
-        {% csrf_token %}
-        Create Dummy Alerts</button>
-    </form>
-    {% for alert in alerts %}
-        <div class="
-            {% if alert.alert_type.name == 'minor' %}alert-info
-            {% elif alert.alert_type.name == 'warning' %}alert-warning
-            {% elif alert.alert_type.name == 'critical' %}alert-danger
-            {% endif %}
-            p-3 mb-2 rounded">
-            <table class="w-100">
-                <tr>
-                    <td>
-                        <strong>{{ alert.interface_name }}</strong> - {{ alert.alert_type.description }} at {{ alert.timestamp }}
-                        <span class="badge badge-secondary">{{ alert.status }}</span>
-                        <p>{{ alert.description }}</p>
-                    </td>
-                    <td class="text-right align-middle">
-                        {% if alert.status == 'NEW' %}
-                            <form method="post" action="{% url 'acknowledgeAlert' alert.id %}">
-                                <button class="
-                                {% if alert.alert_type.name == 'minor' %}btn btn-info
-                                {% elif alert.alert_type.name == 'warning' %}btn btn-warning
-                                {% elif alert.alert_type.name == 'critical' %}btn btn-danger
-                                {% endif %}" 
-                                type="submit">
-                                {% csrf_token %}
-                                Acknowledge</button>
-                            </form>
-                        {% else %}
-                            <form method="post" action="{% url 'removeAlert' alert.id %}">
-                                <button class="
-                                {% if alert.alert_type.name == 'minor' %}btn btn-info
-                                {% elif alert.alert_type.name == 'warning' %}btn btn-warning
-                                {% elif alert.alert_type.name == 'critical' %}btn btn-danger
-                                {% endif %}" 
-                                type="submit">
-                                {% csrf_token %}
-                                Remove</button>
-                            </form>
-                        {% endif %}
-                    </td>
-                </tr>
-            </table>
-        </div>
-    {% endfor %}
+    <h1 class="mb-3">Interface Alerts</h1>
+    <table>
+        <tr>
+            <td class="text-right align-middle">
+                <form method="post" action="{% url 'createDummyAlerts' %}">
+                    <button class="btn btn-primary mb-3" type="submit">
+                    {% csrf_token %}
+                    Create Dummy Alerts</button>
+                </form>
+            </td>
+            <td class="text-right align-middle">
+                <form method="post" action="{% url 'acknowledgeAllAlerts' %}">
+                    <button class="btn btn-primary mb-3" type="submit">
+                    {% csrf_token %}
+                    Acknowledge All</button>
+                </form>
+            </td>
+            <td class="text-right align-middle">
+                <form method="post" action="{% url 'removeAllAlerts' %}">
+                    <button class="btn btn-primary mb-3" type="submit">
+                    {% csrf_token %}
+                    Remove All</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+    <div class="mb-4 alert-panel">
+        {% if alerts.count == 0 %}
+            <p class="text-center">No alerts to display.</p>
+        {% endif %}
+        {% for alert in alerts %}
+            <div class="
+                {% if alert.alert_type.name == 'minor' %}alert-info
+                {% elif alert.alert_type.name == 'warning' %}alert-warning
+                {% elif alert.alert_type.name == 'critical' %}alert-danger
+                {% endif %}
+                p-3 mb-2 rounded">
+                <table class="w-100">
+                    <tr>
+                        <td>
+                            <strong>{{ alert.interface_name }}</strong> - {{ alert.alert_type.description }} at {{ alert.timestamp }}
+                            {% if alert.status == 'NEW' %}
+                                <span class="badge badge-primary">{{ alert.status }}</span>
+                            {% else %}
+                                <span class="badge badge-secondary">{{ alert.status }}</span>
+                            {% endif %}
+                            <p>{{ alert.description }}</p>
+                        </td>
+                        <td class="text-right align-middle">
+                            {% if alert.status == 'NEW' %}
+                                <form method="post" action="{% url 'acknowledgeAlert' alert.id %}">
+                                    <button class="
+                                    {% if alert.alert_type.name == 'minor' %}btn btn-info
+                                    {% elif alert.alert_type.name == 'warning' %}btn btn-warning
+                                    {% elif alert.alert_type.name == 'critical' %}btn btn-danger
+                                    {% endif %}" 
+                                    type="submit">
+                                    {% csrf_token %}
+                                    Acknowledge</button>
+                                </form>
+                            {% else %}
+                                <form method="post" action="{% url 'removeAlert' alert.id %}">
+                                    <button class="
+                                    {% if alert.alert_type.name == 'minor' %}btn btn-info
+                                    {% elif alert.alert_type.name == 'warning' %}btn btn-warning
+                                    {% elif alert.alert_type.name == 'critical' %}btn btn-danger
+                                    {% endif %}" 
+                                    type="submit">
+                                    {% csrf_token %}
+                                    Remove</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        {% endfor %}
+    </div>
 {% endblock %}

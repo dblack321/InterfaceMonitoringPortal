@@ -38,3 +38,16 @@ def createDummyAlerts(request):
             alert_type_id=random.randint(1,3)
         )
     return redirect(views.home)
+
+@login_required
+def acknowledgeAllAlerts(request):
+    for alert in InterfaceAlert.objects.filter(status='NEW'):
+        alert.status = 'ACKNOWLEDGED'
+        alert.save()
+    return redirect(views.home)
+
+@login_required
+def removeAllAlerts(request):
+    for alert in InterfaceAlert.objects.filter(status='ACKNOWLEDGED'):
+        alert.delete()
+    return redirect(views.home)

@@ -7,7 +7,7 @@ from IMPapp.models import InterfaceAlert
 # Create your views here.
 @login_required
 def home(request):
-    return render(request, "home.html", {"alerts": InterfaceAlert.objects.all()})
+    return render(request, "home.html", {"alerts": InterfaceAlert.objects.order_by('-timestamp')})
 
 @login_required
 def masterData(request):
