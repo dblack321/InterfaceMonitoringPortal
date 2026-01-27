@@ -7,6 +7,10 @@ main {
     padding: 5px;
 }
 
+.pad-20 {
+    padding: 20px;
+}
+
 .vertical-line {
   border-left: 2px solid rgb(255, 255, 255);
   height: 30px;

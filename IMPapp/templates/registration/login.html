@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="{% static 'IMPapp/styles.css' %}" rel="stylesheet" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"  rel="stylesheet" />
+</head>
+<body class="d-flex flex-column min-vh-100" style="background-image: url('{% static 'IMPapp/loginBackground.jpg' %}'); background-size: cover; background-position: center;">
+    <div class="container mt-5 bg-innovia rounded pad-20" style="max-width: 400px;">
+        <table class="w-100 mb-3">
+            <tr>
+                <td class="text-center">
+                    <img src="{% static 'IMPapp/cclInnoviaLogo.svg' %}" width="200" height="40" alt="Logo"/>
+                </td>
+            </tr>
+            <tr>
+                <td class="text-center mb-3">
+                    <a class="navbar-brand text-center text-white" href="#">Interface Monitoring Portal</a>
+                </td>
+            </tr>
+        </table>
+        <h2 class="text-center pad-5">Login</h2>
+        {% if form.errors %}
+            <p class="btn-danger text-center rounded">Invalid username or password.</p>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group row">
+                <label for="{{ form.username.id_for_label }}" class="col-4 col-form-label text-white text-right">
+                    Username:
+                </label>
+                <div class="col-8">
+                    {{ form.username }}
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="{{ form.password.id_for_label }}" class="col-4 col-form-label text-white text-right">
+                    Password:
+                </label>
+                <div class="col-8">
+                    {{ form.password }}
+                </div>
+            </div>
+            <div class="text-center mt-3">
+                <button type="submit" class="btn btn-primary px-4">
+                    Log in
+                </button>
+            </div>
+        </form>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" ></script>
+</body>
+</html>

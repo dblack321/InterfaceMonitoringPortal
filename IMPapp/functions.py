@@ -1,27 +1,33 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
+from django.contrib.auth.decorators import login_required
 
 from IMPapp.models import InterfaceAlert
+from . import views
+
 
 import random
 
+@login_required
 def acknowledgeAlert(request, alert_id):
     try:
         alert = InterfaceAlert.objects.get(id=alert_id)
         alert.status = 'ACKNOWLEDGED'
         alert.save()
-        return render(request, "home.html", {"alerts": InterfaceAlert.objects.all()})
+        return redirect(views.home)
     except InterfaceAlert.DoesNotExist:
-        return HttpResponse("Alert not found.", status=404)
-    
+        return views.error404(request, {'message': 'Alert not found.'})
+
+@login_required
 def removeAlert(request, alert_id):
     try:
         alert = InterfaceAlert.objects.get(id=alert_id)
         alert.delete()
-        return render(request, "home.html", {"alerts": InterfaceAlert.objects.all()})
+        return redirect(views.home) 
     except InterfaceAlert.DoesNotExist:
-        return HttpResponse("Alert not found.", status=404)
-    
+        return views.error404(request, {'message': 'Alert not found.'})
+
+@login_required 
 def createDummyAlerts(request):
     # This function would create some dummy alerts for testing purposes.
     for i in range(5):
@@ -29,6 +35,6 @@ def createDummyAlerts(request):
             interface_name=f"Dummy Interface {i+1}",
             description="This is a dummy alert for testing.",
             status="NEW",
-            alert_type_id=random.randint(1,3)  # Assuming an AlertType with ID 1 exists
+            alert_type_id=random.randint(1,3)
         )
-    return render(request, "home.html", {"alerts": InterfaceAlert.objects.all()})
+    return redirect(views.home)

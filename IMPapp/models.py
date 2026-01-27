@@ -16,3 +16,4 @@ class InterfaceAlert(models.Model):
     status = models.CharField(max_length=20, choices=AlertStatus.choices, default=AlertStatus.NEW)
     timestamp = models.DateTimeField(auto_now_add=True)
     description = models.TextField()
+
