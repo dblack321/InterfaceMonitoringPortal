@@ -1,28 +1,52 @@
 {% extends "template.html" %}{% block title %}Home{% endblock %}
+{% load static%}
 {% block content %}
-    <h1 class="mb-3">Interface Alerts</h1>
-    <table>
+    <table class="w-100 mb-3">
         <tr>
-            <td class="text-right align-middle">
-                <form method="post" action="{% url 'createDummyAlerts' %}">
-                    <button class="btn btn-primary mb-3" type="submit">
-                    {% csrf_token %}
-                    Create Dummy Alerts</button>
-                </form>
+            <td>
+                <h1 class="mb-3">Interface Alerts</h1>
+                <table class="pad-5"> 
+                    <tr>
+                        <td class="text-right align-middle">
+                            <form method="post" action="{% url 'createDummyAlerts' %}">
+                                <button class="btn btn-primary mb-3" type="submit">
+                                {% csrf_token %}
+                                Create Dummy Alerts</button>
+                            </form>
+                        </td>
+                        <td class="text-right align-middle">
+                            <form method="post" action="{% url 'acknowledgeAllAlerts' %}">
+                                <button class="btn btn-primary mb-3" type="submit">
+                                {% csrf_token %}
+                                Acknowledge All</button>
+                            </form>
+                        </td>
+                        <td class="text-right align-middle">
+                            <form method="post" action="{% url 'removeAllAlerts' %}">
+                                <button class="btn btn-primary mb-3" type="submit">
+                                {% csrf_token %}
+                                Remove All</button>
+                            </form>
+                        </td>
+                    </tr>
+                </table>
             </td>
-            <td class="text-right align-middle">
-                <form method="post" action="{% url 'acknowledgeAllAlerts' %}">
-                    <button class="btn btn-primary mb-3" type="submit">
-                    {% csrf_token %}
-                    Acknowledge All</button>
-                </form>
-            </td>
-            <td class="text-right align-middle">
-                <form method="post" action="{% url 'removeAllAlerts' %}">
-                    <button class="btn btn-primary mb-3" type="submit">
-                    {% csrf_token %}
-                    Remove All</button>
-                </form>
+            <td class="text-right align-middle ml-5">
+                <img src="{% static 'IMPapp/alertIcon.png' %}" width="40" height="40" alt="Alerts Icon"/>
+                <table class="pad-5" style="margin-left: auto;">
+                    <tr>
+                        <td class="pad-5"><p>Total = {{ alerts.count }}</p></td>
+                        <td class="pad-5"><p><span class="badge badge-danger">CRITICAL</span> = {{ critical_alerts_count }}</p></td>
+                    </tr>
+                    <tr>
+                        <td class="pad-5"><p><span class="badge badge-primary">NEW</span> = {{ new_alerts_count }}</p></td>
+                        <td class="pad-5"><p><span class="badge badge-warning">WARNING</span> = {{ warning_alerts_count }}</p></td>
+                    </tr>
+                    <tr>
+                        <td class="pad-5"><p><span class="badge badge-secondary">ACKNOWLEDGED</span> = {{ acknowledged_alerts_count }}</p></td>
+                        <td class="pad-5"><p><span class="badge badge-info">MINOR</span> = {{ minor_alerts_count }}</p></td>
+                    </tr>
+                </table>
             </td>
         </tr>
     </table>

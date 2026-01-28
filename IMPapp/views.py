@@ -7,7 +7,12 @@ from IMPapp.models import InterfaceAlert
 # Create your views here.
 @login_required
 def home(request):
-    return render(request, "home.html", {"alerts": InterfaceAlert.objects.order_by('-timestamp')})
+    return render(request, "home.html", {"alerts": InterfaceAlert.objects.order_by('-timestamp'), 
+                                         "new_alerts_count": InterfaceAlert.objects.filter(status='NEW').count(), 
+                                         "acknowledged_alerts_count": InterfaceAlert.objects.filter(status='ACKNOWLEDGED').count(),
+                                         "critical_alerts_count": InterfaceAlert.objects.filter(alert_type__name='critical').count(),
+                                         "warning_alerts_count": InterfaceAlert.objects.filter(alert_type__name='warning').count(),
+                                         "minor_alerts_count": InterfaceAlert.objects.filter(alert_type__name='minor').count()})
 
 @login_required
 def masterData(request):
