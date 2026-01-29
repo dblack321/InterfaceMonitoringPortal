@@ -2,21 +2,21 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
-from IMPapp.models import InterfaceAlert
+from IMPapp.models import Alert
 
 # Create your views here.
 @login_required
 def home(request):
-    return render(request, "home.html", {"alerts": InterfaceAlert.objects.order_by('-timestamp'), 
-                                         "new_alerts_count": InterfaceAlert.objects.filter(status='NEW').count(), 
-                                         "acknowledged_alerts_count": InterfaceAlert.objects.filter(status='ACKNOWLEDGED').count(),
-                                         "critical_alerts_count": InterfaceAlert.objects.filter(alert_type__name='critical').count(),
-                                         "warning_alerts_count": InterfaceAlert.objects.filter(alert_type__name='warning').count(),
-                                         "minor_alerts_count": InterfaceAlert.objects.filter(alert_type__name='minor').count()})
+    return render(request, "home.html", {"new_alerts_count": Alert.objects.filter(status='NEW').count(), 
+                                         "acknowledged_alerts_count": Alert.objects.filter(status='ACKNOWLEDGED').count(),
+                                         "total_alerts_count": Alert.objects.all().count(),
+                                         "critical_alerts": Alert.objects.filter(alert_level__name='critical'),
+                                         "warning_alerts": Alert.objects.filter(alert_level__name='warning'),
+                                         "minor_alerts": Alert.objects.filter(alert_level__name='minor')})
 
 @login_required
-def masterData(request):
-    return render(request, "masterdata.html")
+def about(request):
+    return render(request, "about.html")
 
 @login_required
 def error404(request, context):

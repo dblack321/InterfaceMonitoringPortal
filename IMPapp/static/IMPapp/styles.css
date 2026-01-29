@@ -35,3 +35,24 @@ main {
     border-radius: 20px;
     padding: 20px;
 }
+
+.alert-panel-table td {
+    vertical-align: top !important;
+}
+
+.wd-80 {
+    width: 80vw;
+}
+
+.container-center {
+    margin: 0 auto;
+}
+
+.align-right {
+    text-align: right;
+    margin-left: auto;
+}
+
+.rounded-20 {
+    border-radius: 20px;
+}

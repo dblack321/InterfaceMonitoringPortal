@@ -1,105 +1,178 @@
 {% extends "template.html" %}{% block title %}Home{% endblock %}
 {% load static%}
 {% block content %}
-    <table class="w-100 mb-3">
+    <div class="container-center wd-80 mb-4">
+        <table class="w-100 mb-3">
+            <tr>
+                <td>
+                    <h1 class="mb-3">Interface Alerts</h1>
+                    <table class="pad-5"> 
+                        <tr>
+                            <td class="text-right align-middle">
+                                <form method="post" action="{% url 'createDummyAlerts' %}">
+                                    <button class="btn btn-primary mb-3" type="submit">
+                                    {% csrf_token %}
+                                    Create Dummy Alerts</button>
+                                </form>
+                            </td>
+                            <td class="text-right align-middle">
+                                <form method="post" action="{% url 'acknowledgeAllAlerts' %}">
+                                    <button class="btn btn-primary mb-3" type="submit">
+                                    {% csrf_token %}
+                                    Acknowledge All</button>
+                                </form>
+                            </td>
+                            <td class="text-right align-middle">
+                                <form method="post" action="{% url 'removeAllAlerts' %}">
+                                    <button class="btn btn-primary mb-3" type="submit">
+                                    {% csrf_token %}
+                                    Remove All</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td class="text-right align-middle ml-5">
+                    <img src="{% static 'IMPapp/alertIcon.png' %}" width="58" height="45" alt="Alerts Icon" class="pad-5"/>
+                    <table class="align-right">
+                        <tr>
+                            <td class="pad-5"><p>Total = {{ total_alerts_count }}</p></td>
+                            <td class="pad-5"><p><span class="badge badge-danger">CRITICAL</span> = {{ critical_alerts.count }}</p></td>
+                        </tr>
+                        <tr>
+                            <td class="pad-5"><p><span class="badge badge-primary">NEW</span> = {{ new_alerts_count }}</p></td>
+                            <td class="pad-5"><p><span class="badge badge-warning">WARNING</span> = {{ warning_alerts.count }}</p></td>
+                        </tr>
+                        <tr>
+                            <td class="pad-5"><p><span class="badge badge-secondary">ACKNOWLEDGED</span> = {{ acknowledged_alerts_count }}</p></td>
+                            <td class="pad-5"><p><span class="badge badge-info">MINOR</span> = {{ minor_alerts.count }}</p></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table class="w-100 mb-3 alert-panel-table">
+        <tr>
+            <th class="text-center">Minor Alerts</th>
+            <th class="text-center">Warning Alerts</th>
+            <th class="text-center">Critical Alerts</th>
+        </tr>
         <tr>
             <td>
-                <h1 class="mb-3">Interface Alerts</h1>
-                <table class="pad-5"> 
-                    <tr>
-                        <td class="text-right align-middle">
-                            <form method="post" action="{% url 'createDummyAlerts' %}">
-                                <button class="btn btn-primary mb-3" type="submit">
-                                {% csrf_token %}
-                                Create Dummy Alerts</button>
-                            </form>
-                        </td>
-                        <td class="text-right align-middle">
-                            <form method="post" action="{% url 'acknowledgeAllAlerts' %}">
-                                <button class="btn btn-primary mb-3" type="submit">
-                                {% csrf_token %}
-                                Acknowledge All</button>
-                            </form>
-                        </td>
-                        <td class="text-right align-middle">
-                            <form method="post" action="{% url 'removeAllAlerts' %}">
-                                <button class="btn btn-primary mb-3" type="submit">
-                                {% csrf_token %}
-                                Remove All</button>
-                            </form>
-                        </td>
-                    </tr>
-                </table>
+                <div class="mb-4 alert-panel">
+                    {% if minor_alerts.count == 0 %}
+                        <h5 class="text-center">No minor alerts to display.</h5>
+                    {% endif %}
+                    {% for alert in minor_alerts %}
+                        <div class="alert-info p-3 mb-2 rounded">
+                            <table class="w-100">
+                                <tr>
+                                    <td>
+                                        <strong>{{ alert.interface.description }}</strong> - <span class="badge badge-info">{{ alert.alert_level.description }}</span> at {{ alert.created_at }}
+                                        <span class="
+                                        {% if alert.status == 'NEW' %}badge-primary
+                                        {% else %}badge-secondary
+                                        {% endif %} badge"
+                                        >{{ alert.status }}</span>
+                                        {% if alert.status == 'ACKNOWLEDGED' %}
+                                            <br><em>Acknowledged at {{ alert.acknowledged_at }} by {{ alert.acknowledged_by }}</em>
+                                        {% endif %}
+                                        <p>{{ alert.message }}</p>
+                                    </td>
+                                    <td class="text-right align-middle">
+                                        {% if alert.status == 'NEW' %}
+                                            <form method="post" action="{% url 'acknowledgeAlert' alert.id %}">
+                                                <button class="btn btn-info" type="submit">{% csrf_token %}Acknowledge</button>
+                                            </form>
+                                        {% else %}
+                                            <form method="post" action="{% url 'removeAlert' alert.id %}">
+                                                <button class="btn btn-info" type="submit">{% csrf_token %}Remove</button>
+                                            </form>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    {% endfor %}
+                </div>
             </td>
-            <td class="text-right align-middle ml-5">
-                <img src="{% static 'IMPapp/alertIcon.png' %}" width="40" height="40" alt="Alerts Icon"/>
-                <table class="pad-5" style="margin-left: auto;">
-                    <tr>
-                        <td class="pad-5"><p>Total = {{ alerts.count }}</p></td>
-                        <td class="pad-5"><p><span class="badge badge-danger">CRITICAL</span> = {{ critical_alerts_count }}</p></td>
-                    </tr>
-                    <tr>
-                        <td class="pad-5"><p><span class="badge badge-primary">NEW</span> = {{ new_alerts_count }}</p></td>
-                        <td class="pad-5"><p><span class="badge badge-warning">WARNING</span> = {{ warning_alerts_count }}</p></td>
-                    </tr>
-                    <tr>
-                        <td class="pad-5"><p><span class="badge badge-secondary">ACKNOWLEDGED</span> = {{ acknowledged_alerts_count }}</p></td>
-                        <td class="pad-5"><p><span class="badge badge-info">MINOR</span> = {{ minor_alerts_count }}</p></td>
-                    </tr>
-                </table>
+            <td>
+                <div class="mb-4 alert-panel">
+                    {% if warning_alerts.count == 0 %}
+                        <h5 class="text-center">No warning alerts to display.</h5>
+                    {% endif %}
+                    {% for alert in warning_alerts %}
+                        <div class="alert-warning p-3 mb-2 rounded">
+                            <table class="w-100">
+                                <tr>
+                                    <td>
+                                        <strong>{{ alert.interface.description }}</strong> - <span class="badge badge-warning">{{ alert.alert_level.description }}</span> at {{ alert.created_at }}
+                                        <span class="
+                                        {% if alert.status == 'NEW' %}badge-primary
+                                        {% else %}badge-secondary
+                                        {% endif %} badge"
+                                        >{{ alert.status }}</span>
+                                        {% if alert.status == 'ACKNOWLEDGED' %}
+                                            <br><em>Acknowledged at {{ alert.acknowledged_at }} by {{ alert.acknowledged_by }}</em>
+                                        {% endif %}
+                                        <p>{{ alert.message }}</p>
+                                    </td>
+                                    <td class="text-right align-middle">
+                                        {% if alert.status == 'NEW' %}
+                                            <form method="post" action="{% url 'acknowledgeAlert' alert.id %}">
+                                                <button class="btn btn-warning" type="submit">{% csrf_token %}Acknowledge</button>
+                                            </form>
+                                        {% else %}
+                                            <form method="post" action="{% url 'removeAlert' alert.id %}">
+                                                <button class="btn btn-warning" type="submit">{% csrf_token %}Remove</button>
+                                            </form>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    {% endfor %}
+                </div>
+            </td>
+            <td>
+                <div class="mb-4 alert-panel">
+                    {% if critical_alerts.count == 0 %}
+                        <h5 class="text-center">No critical alerts to display.</h5>
+                    {% endif %}
+                    {% for alert in critical_alerts %}
+                        <div class="alert-danger p-3 mb-2 rounded">
+                            <table class="w-100">
+                                <tr>
+                                    <td>
+                                        <strong>{{ alert.interface.description }}</strong> - <span class="badge badge-danger">{{ alert.alert_level.description }}</span> at {{ alert.created_at }}
+                                        <span class="
+                                        {% if alert.status == 'NEW' %}badge-primary
+                                        {% else %}badge-secondary
+                                        {% endif %} badge"
+                                        >{{ alert.status }}</span>
+                                        {% if alert.status == 'ACKNOWLEDGED' %}
+                                            <br><em>Acknowledged at {{ alert.acknowledged_at }} by {{ alert.acknowledged_by }}</em>
+                                        {% endif %}
+                                        <p>{{ alert.message }}</p>
+                                    </td>
+                                    <td class="text-right align-middle">
+                                        {% if alert.status == 'NEW' %}
+                                            <form method="post" action="{% url 'acknowledgeAlert' alert.id %}">
+                                                <button class="btn btn-danger" type="submit">{% csrf_token %}Acknowledge</button>
+                                            </form>
+                                        {% else %}
+                                            <form method="post" action="{% url 'removeAlert' alert.id %}">
+                                                <button class="btn btn-danger" type="submit">{% csrf_token %}Remove</button>
+                                            </form>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    {% endfor %}
+                </div>
             </td>
         </tr>
     </table>
-    <div class="mb-4 alert-panel">
-        {% if alerts.count == 0 %}
-            <p class="text-center">No alerts to display.</p>
-        {% endif %}
-        {% for alert in alerts %}
-            <div class="
-                {% if alert.alert_type.name == 'minor' %}alert-info
-                {% elif alert.alert_type.name == 'warning' %}alert-warning
-                {% elif alert.alert_type.name == 'critical' %}alert-danger
-                {% endif %}
-                p-3 mb-2 rounded">
-                <table class="w-100">
-                    <tr>
-                        <td>
-                            <strong>{{ alert.interface_name }}</strong> - {{ alert.alert_type.description }} at {{ alert.timestamp }}
-                            {% if alert.status == 'NEW' %}
-                                <span class="badge badge-primary">{{ alert.status }}</span>
-                            {% else %}
-                                <span class="badge badge-secondary">{{ alert.status }}</span>
-                            {% endif %}
-                            <p>{{ alert.description }}</p>
-                        </td>
-                        <td class="text-right align-middle">
-                            {% if alert.status == 'NEW' %}
-                                <form method="post" action="{% url 'acknowledgeAlert' alert.id %}">
-                                    <button class="
-                                    {% if alert.alert_type.name == 'minor' %}btn btn-info
-                                    {% elif alert.alert_type.name == 'warning' %}btn btn-warning
-                                    {% elif alert.alert_type.name == 'critical' %}btn btn-danger
-                                    {% endif %}" 
-                                    type="submit">
-                                    {% csrf_token %}
-                                    Acknowledge</button>
-                                </form>
-                            {% else %}
-                                <form method="post" action="{% url 'removeAlert' alert.id %}">
-                                    <button class="
-                                    {% if alert.alert_type.name == 'minor' %}btn btn-info
-                                    {% elif alert.alert_type.name == 'warning' %}btn btn-warning
-                                    {% elif alert.alert_type.name == 'critical' %}btn btn-danger
-                                    {% endif %}" 
-                                    type="submit">
-                                    {% csrf_token %}
-                                    Remove</button>
-                                </form>
-                            {% endif %}
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        {% endfor %}
-    </div>
 {% endblock %}
