@@ -1,0 +1,55 @@
+<div class="mb-4 alert-panel">
+    {% if alerts.count == 0 %}
+        <h5 class="text-center">No alerts to display.</h5>
+    {% endif %}
+    {% for alert in alerts %}
+        <div class="
+        {% if alert.alert_level.name == 'critical' %}alert-danger
+        {% elif alert.alert_level.name == 'warning' %}alert-warning
+        {% elif alert.alert_level.name == 'minor' %}alert-info
+        {% endif %}
+        p-3 mb-2 rounded">
+            <table class="w-100">
+                <tr>
+                    <td>
+                        <strong>{{ alert.interface.description }}</strong> - 
+                        <span class=" 
+                        {% if alert.alert_level.name == 'critical' %}badge-danger
+                        {% elif alert.alert_level.name == 'warning' %}badge-warning
+                        {% elif alert.alert_level.name == 'minor' %}badge-info
+                        {% endif %} badge">{{ alert.alert_level.description }}</span>
+                         at {{ alert.created_at }}
+                        <span class="
+                        {% if alert.status == 'NEW' %}badge-primary
+                        {% else %}badge-secondary
+                        {% endif %} badge"
+                        >{{ alert.status }}</span>
+                        {% if alert.status == 'ACKNOWLEDGED' %}
+                            <br><em>Acknowledged at {{ alert.acknowledged_at }} by {{ alert.acknowledged_by }}</em>
+                        {% endif %}
+                        <p>{{ alert.message }}</p>
+                    </td>
+                    <td class="text-right align-middle">
+                        {% if alert.status == 'NEW' %}
+                            <form method="post" action="{% url 'acknowledgeAlert' alert.id %}">
+                                <button class="btn 
+                                {% if alert.alert_level.name == 'critical' %}btn-danger
+                                {% elif alert.alert_level.name == 'warning' %}btn-warning
+                                {% elif alert.alert_level.name == 'minor' %}btn-info
+                                {% endif %}" type="submit">{% csrf_token %}Acknowledge</button>
+                            </form>
+                        {% else %}
+                            <form method="post" action="{% url 'removeAlert' alert.id %}">
+                                <button class="btn 
+                                {% if alert.alert_level.name == 'critical' %}btn-danger
+                                {% elif alert.alert_level.name == 'warning' %}btn-warning
+                                {% elif alert.alert_level.name == 'minor' %}btn-info
+                                {% endif %}" type="submit">{% csrf_token %}Remove</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    {% endfor %}
+</div>

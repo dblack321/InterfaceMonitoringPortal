@@ -1,0 +1,46 @@
+{% extends "template.html" %}{% block title %}Manage Threshold{% endblock %}
+{% block content %}
+    <div class="container-center mb-4 wd-80 bg-light rounded-20 pad-20">    
+        <h1>Manage Thresholds</h1>
+        <form method="post" action="{% if action == 'edit' %}{% url 'editThreshold' threshold.id %}{% elif action == 'add' %}{% url 'addThreshold' %}{% endif %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="interface">Interface</label>
+                <select class="form-control" id="interface" name="interface">
+                    {% for interface in interfaces %}
+                        <option value="{{ interface.id }}" {% if threshold and threshold.interface.id == interface.id %}selected{% endif %}>{{ interface.name }}</option>
+                    {% endfor %}
+                </select>
+                <br>
+                <label for="alert_level">Alert Level</label>
+                <select class="form-control" id="alert_level" name="alert_level">
+                    {% for level in alert_levels %}
+                        <option value="{{ level.id }}" {% if threshold and threshold.alert_level.id == level.id %}selected{% endif %}>{{ level.description }}</option>
+                    {% endfor %}
+                </select>
+                <br>
+                <label for="metric">Metric</label>
+                <select class="form-control" id="metric" name="metric">
+                    {% for metric in metrics %}
+                        <option value="{{ metric.id }}">{{ metric.name }}</option>
+                    {% endfor %}
+                </select>
+                <br>
+                <label for="upper_limit">Upper Limit</label>
+                <input type="number" step="any" class="form-control" id="upper_limit" name="upper_limit" value="{% if threshold %}{{ threshold.upper_limit }}{% endif %}" required>
+                <br>
+                <label for="lower_limit">Lower Limit</label>
+                <input type="number" step="any" class="form-control" id="lower_limit" name="lower_limit" value="{% if threshold %}{{ threshold.lower_limit }}{% endif %}" required>
+                <br>
+                <label for="description">Description</label>
+                <textarea class="form-control" id="description" name="description" rows="3">{% if threshold %}{{ threshold.description }}{% endif %}</textarea>
+                <br>
+                <table class="wd-100">
+                    <tr>
+                        <td class="text-right"><button type="submit" class="btn btn-primary">{% if action == 'edit' %}Update{% else %}Add{% endif %}</button></td>
+                        <td><a href="{% url 'masterdata' %}" class="btn btn-secondary mr-2">Cancel</a></td>
+                    </tr>
+                </table>
+            </div>
+    </div>
+{% endblock %}

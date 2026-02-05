@@ -1,0 +1,22 @@
+{% extends "template.html" %}{% block title %}Manage Metric{% endblock %}
+{% block content %}
+    <div class="container-center mb-4 wd-80 bg-light rounded-20 pad-20">    
+        <h1>Manage Metric</h1>
+        <form method="post" action="{% if action == 'edit' %}{% url 'editMetric' metric.id %}{% elif action == 'add' %}{% url 'addMetric' %}{% endif %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="name">Metric Name</label>
+                <input type="text" class="form-control" id="name" name="name" value="{% if metric %}{{ metric.name }}{% endif %}" required>
+                <br>
+                <label for="unit_of_measure">Unit of Measure</label>
+                <input type="text" class="form-control" id="unit_of_measure" name="unit_of_measure" value="{% if metric %}{{ metric.unit_of_measure }}{% endif %}" required>
+                <br>
+                <table class="wd-100">
+                    <tr>
+                        <td class="text-right"><button type="submit" class="btn btn-primary">{% if action == 'edit' %}Update{% else %}Add{% endif %}</button></td>
+                        <td><a href="{% url 'masterdata' %}" class="btn btn-secondary mr-2">Cancel</a></td>
+                    </tr>
+                </table>
+            </div>
+    </div>
+{% endblock %}

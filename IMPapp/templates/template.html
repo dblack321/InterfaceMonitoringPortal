@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"  rel="stylesheet" />
 </head>
 <body class="d-flex flex-column min-vh-100 bg-innovia-light">
-    <nav class="navbar navbar-expand-lg navbar-light bg-innovia">
+    <nav class="navbar navbar-expand-lg navbar-light bg-innovia sticky-top px-3">
         <img src="{% static 'IMPapp/cclInnoviaLogo.svg' %}" width="200" height="40" class="d-inline-block align-top mr-2" alt="Logo"/>
         <a class="navbar-brand text-white" href="#">Interface Monitoring Portal</a>
         <div class="vertical-line"></div>
@@ -18,6 +18,9 @@
             <ul class="navbar-nav">
                 <li class="nav-item pad-5">
                     <a class="nav-link text-light" href="/IMPapp/home/">Home</a>
+                </li>
+                <li class="nav-item pad-5">
+                    <a class="nav-link text-light" href="/IMPapp/masterdata/">Master Data</a>
                 </li>
                 <li class="nav-item pad-5">
                     <a class="nav-link text-light" href="/IMPapp/about/">About</a>
@@ -42,7 +45,7 @@
         {% block content %}
         {% endblock %}
     </main>
-    <footer class="bg-dark text-white text-center p-3">
+    <footer class="bg-dark text-white text-center p-3 wd-100 mt-auto">
         &copy; 2026 Interface Monitoring Portal
     </footer>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
