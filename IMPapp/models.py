@@ -29,7 +29,7 @@ class Alert(models.Model):
 class Metric(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
-    unit_of_measure = models.CharField(max_length=50)
+    unit_of_measure = models.CharField(max_length=100)
 
 class Threshold(models.Model):
     id = models.AutoField(primary_key=True)

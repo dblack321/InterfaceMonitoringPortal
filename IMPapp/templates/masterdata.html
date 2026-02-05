@@ -1,0 +1,24 @@
+{% extends "template.html" %}{% block title %}Master Data{% endblock %}
+{% load static %}
+{% block content %}
+    <div class="container-center wd-80 mb-4">
+        <h1 class="mb-3">Master Data Management</h1>
+        <table class="wd-100 mb-3">
+            <tr>
+                <td>
+                    {% include "partials/threshold.html" with thresholds=thresholds %}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    {% include "partials/interface.html" with interfaces=interfaces %}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    {% include "partials/metric.html" with metrics=metrics %}
+                </td>
+            </tr>
+        </table>
+    </div>
+{% endblock %}

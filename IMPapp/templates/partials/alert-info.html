@@ -1,0 +1,16 @@
+{% load static %}
+<img src="{% static 'IMPapp/alertIcon.png' %}" width="58" height="45" alt="Alerts Icon" class="pad-5"/>
+<table class="align-right">
+    <tr>
+        <td class="pad-5"><p>Total = {{ total_alerts_count }}</p></td>
+        <td class="pad-5"><p><span class="badge badge-danger">CRITICAL</span> = {{ critical_alerts.count }}</p></td>
+    </tr>
+    <tr>
+        <td class="pad-5"><p><span class="badge badge-primary">NEW</span> = {{ new_alerts_count }}</p></td>
+        <td class="pad-5"><p><span class="badge badge-warning">WARNING</span> = {{ warning_alerts.count }}</p></td>
+    </tr>
+    <tr>
+        <td class="pad-5"><p><span class="badge badge-secondary">ACKNOWLEDGED</span> = {{ acknowledged_alerts_count }}</p></td>
+        <td class="pad-5"><p><span class="badge badge-info">MINOR</span> = {{ minor_alerts.count }}</p></td>
+    </tr>
+</table>
