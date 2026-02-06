@@ -1,7 +1,7 @@
 from django.urls import include, path
 from . import views
-from . import alertfunctions
-from . import masterdatafunctions
+from .functions import alertfunctions
+from .functions import masterdatafunctions
 
 urlpatterns = [
     # Main Pages

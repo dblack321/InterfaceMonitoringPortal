@@ -3,7 +3,8 @@ from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 
 from IMPapp.models import Alert, Interface
-from . import views
+from .. import views
+from .generalfunctions import validateUserAuthorisation
 
 
 import random
@@ -59,7 +60,9 @@ def createDummyAlerts(request):
         return views.error(request, {'error' : '403 Forbidden', 'message': 'You do not have permission to add alerts.', 'redirect_url': 'home'})
 
     # This function would create some dummy alerts for testing purposes.
-    dummyInterface = Interface.objects.all().filter(name="dummyInterface").first()
+    dummyInterface = Interface.objects.all().first()
+    if not dummyInterface:
+        dummyInterface = Interface.objects.create(name="dummyInterface", description="This is a dummy interface for testing.")
 
     for i in range(5):
         Alert.objects.create(
@@ -102,14 +105,3 @@ def removeAllAlerts(request):
 
     # return to home page
     return redirect(views.home)
-
-
-
-# 
-# validate user can complete action
-#
-def validateUserAuthorisation(request, permission_codename):
-    for group in request.user.groups.all():
-        for perm in group.permissions.all():
-            if perm.codename == permission_codename:
-                return True
