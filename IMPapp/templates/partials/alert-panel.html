@@ -12,22 +12,24 @@
             <table class="w-100">
                 <tr>
                     <td>
-                        <strong>{{ alert.interface.description }}</strong> - 
+                        <strong>{{ alert.interface.name }}</strong> - 
                         <span class=" 
                         {% if alert.alert_level.name == 'critical' %}badge-danger
                         {% elif alert.alert_level.name == 'warning' %}badge-warning
                         {% elif alert.alert_level.name == 'minor' %}badge-info
                         {% endif %} badge">{{ alert.alert_level.description }}</span>
-                         at {{ alert.created_at }}
-                        <span class="
+                         <span class="
                         {% if alert.status == 'NEW' %}badge-primary
                         {% else %}badge-secondary
                         {% endif %} badge"
                         >{{ alert.status }}</span>
+                        <br>
+                        at {{ alert.created_at }}<br>
                         {% if alert.status == 'ACKNOWLEDGED' %}
-                            <br><em>Acknowledged at {{ alert.acknowledged_at }} by {{ alert.acknowledged_by }}</em>
+                            <em>Acknowledged at {{ alert.acknowledged_at }} by {{ alert.acknowledged_by }}</em>
                         {% endif %}
-                        <p>{{ alert.message }}</p>
+                        <hr>
+                        <p class="pad-5"><strong>Message: </strong>{{ alert.message }}</p>
                     </td>
                     <td class="text-right align-middle">
                         {% if alert.status == 'NEW' %}
