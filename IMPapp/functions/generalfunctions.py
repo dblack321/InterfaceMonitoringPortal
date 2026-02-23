@@ -3,6 +3,11 @@
 # 
 # validate user can complete action
 #
+from urllib import request
+from django.shortcuts import redirect
+from IMPapp import views
+
+
 def validateUserAuthorisation(request, permission_codename):
     # check group permissions
     for group in request.user.groups.all():
@@ -19,3 +24,13 @@ def validateUserAuthorisation(request, permission_codename):
             return True
     # user is NOT authorised
     return False
+
+
+#
+#
+#
+def handleResponse(request, response, redirect_page):
+    if response['status'] == 'success':
+        return redirect(redirect_page)
+    else:
+        return views.error(request, {'error' : 'Error', 'message': response['message'], 'redirect_url': redirect_page})

@@ -1,10 +1,11 @@
 from datetime import datetime
-from urllib import request
+from urllib import request, response
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
 from IMPapp.models import AlertLevel, Interface, Metric, Threshold, Alert
-from .generalfunctions import validateUserAuthorisation
+from .generalfunctions import handleResponse, validateUserAuthorisation
 from .. import views
+from .databaseFunctions import AlertDatabaseFunctions, ThresholdDatabaseFunctions, InterfaceDatabaseFunctions, MetricDatabaseFunctions
 import random
 
 
@@ -17,17 +18,19 @@ def addThreshold(request):
         return views.error(request, {'error' : '403 Forbidden', 'message': 'You do not have permission to add thresholds.', 'redirect_url': 'masterdata'})
     
     # create a new threshold
-    Threshold.objects.create(
+    threshold = Threshold(
          interface=get_object_or_404(Interface, id=request.POST.get('interface')),
          alert_level=get_object_or_404(AlertLevel, id=request.POST.get('alert_level')),
          metric=get_object_or_404(Metric, id=request.POST.get('metric')),
          upper_limit=request.POST.get('upper_limit'),
          lower_limit=request.POST.get('lower_limit'),
-         description=request.POST.get('description')
+         description=request.POST.get('description'),
     )
     
+    response = ThresholdDatabaseFunctions.add_threshold(request, threshold)
+    
     # redirect to the masterdata page
-    return redirect(views.masterdata)
+    return handleResponse(request, response, views.masterdata)
 
 
 # edit an existing threshold
@@ -47,10 +50,11 @@ def editThreshold(request, threshold_id):
     threshold.upper_limit=request.POST.get('upper_limit')
     threshold.lower_limit=request.POST.get('lower_limit')
     threshold.description=request.POST.get('description')
-    threshold.save()
+    
+    response = ThresholdDatabaseFunctions.update_threshold(request, threshold)
     
     # redirect to the masterdata page
-    return redirect(views.masterdata)
+    return handleResponse(request, response, views.masterdata)
 
 
 # remove an existing threshold
@@ -63,10 +67,11 @@ def removeThreshold(request, threshold_id):
     
     # remove the threshold
     threshold = get_object_or_404(Threshold, id=threshold_id)
-    threshold.delete()
+    
+    response = ThresholdDatabaseFunctions.delete_threshold(request, threshold)
     
     # redirect to the masterdata page
-    return redirect(views.masterdata)
+    return handleResponse(request, response, views.masterdata)
 
 
 # add a new interface
@@ -78,13 +83,15 @@ def addInterface(request):
         return views.error(request, {'error' : '403 Forbidden', 'message': 'You do not have permission to add interfaces.', 'redirect_url': 'masterdata'})
     
     # create a new interface
-    Interface.objects.create(
+    interface = Interface(
          name=request.POST.get('name'),
          description=request.POST.get('description')
     )
+
+    response = InterfaceDatabaseFunctions.add_interface(request, interface)
     
     # redirect to the masterdata page
-    return redirect(views.masterdata)
+    return handleResponse(request, response, views.masterdata)
 
 
 # edit an existing interface
@@ -99,10 +106,11 @@ def editInterface(request, interface_id):
     interface = get_object_or_404(Interface, id=interface_id)
     interface.name=request.POST.get('name')
     interface.description=request.POST.get('description')
-    interface.save()
+    
+    response = InterfaceDatabaseFunctions.update_interface(request, interface)
     
     # redirect to the masterdata page
-    return redirect(views.masterdata)
+    return handleResponse(request, response, views.masterdata)
 
 
 # remove an existing interface
@@ -116,21 +124,10 @@ def removeInterface(request, interface_id):
     # get the interface
     interface = get_object_or_404(Interface, id=interface_id)
     
-    # validate not assigned to a threshold
-    for threshold in Threshold.objects.all():
-        if threshold.interface.id == interface.id:
-            return views.error(request, {'error' : 'Interface in use', 'message': 'Interface is still assigned to a threshold.', 'redirect_url': 'masterdata'})
-   
-    # validate not assigned to any existing alerts
-    for alert in Alert.objects.all():
-        if alert.interface.id == interface.id:
-            return views.error(request, {'error' : 'Interface in use', 'message': 'There are still active alerts for this Interface.', 'redirect_url': 'masterdata'})
-    
-    # validation passed, now remove the alert
-    interface.delete()
+    response = InterfaceDatabaseFunctions.delete_interface(request, interface)
     
     # redirect to the masterdata page
-    return redirect(views.masterdata)
+    return handleResponse(request, response, views.masterdata)
 
 
 # add a new metric
@@ -142,13 +139,15 @@ def addMetric(request):
         return views.error(request, {'error' : '403 Forbidden', 'message': 'You do not have permission to add metrics.', 'redirect_url': 'masterdata'})
     
     # create the metric
-    Metric.objects.create(
+    metric = Metric(
          name=request.POST.get('name'),
          unit_of_measure=request.POST.get('unit_of_measure'),
     )
+
+    response = MetricDatabaseFunctions.add_metric(request, metric)
     
     # redirect to the masterdata page
-    return redirect(views.masterdata)
+    return handleResponse(request, response, views.masterdata)
 
 
 # edit an existing metric
@@ -163,10 +162,11 @@ def editMetric(request, metric_id):
     metric = get_object_or_404(Metric, id=metric_id)
     metric.name=request.POST.get('name')
     metric.unit_of_measure=request.POST.get('unit_of_measure')
-    metric.save()
+   
+    response = MetricDatabaseFunctions.update_metric(request, metric)
    
     # redirect to the masterdata page
-    return redirect(views.masterdata)
+    return handleResponse(request, response, views.masterdata)
 
 
 # remove an existing metric
@@ -180,13 +180,8 @@ def removeMetric(request, metric_id):
     # get the metric
     metric = get_object_or_404(Metric, id=metric_id)
 
-     # validate not assigned to a threshold
-    for threshold in Threshold.objects.all():
-        if threshold.metric.id == metric.id:
-            return views.error(request, {'error' : 'Metric in use', 'message': 'Metric is still assigned to a threshold.', 'redirect_url': 'masterdata'})
-
     # validation passed, now remove the metric
-    metric.delete()
+    response = MetricDatabaseFunctions.delete_metric(request, metric)
     
     # redirect to the masterdata page
-    return redirect(views.masterdata)
+    return handleResponse(request, response, views.masterdata)
