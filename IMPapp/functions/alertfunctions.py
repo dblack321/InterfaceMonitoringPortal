@@ -1,10 +1,11 @@
 from datetime import datetime
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 
-from IMPapp.models import Alert, Interface
+from IMPapp.models import Alert, Interface, AlertLevel
 from .. import views
-from .generalfunctions import validateUserAuthorisation
+from .generalfunctions import validateUserAuthorisation, handleResponse
+from .databaseFunctions import AlertDatabaseFunctions
 
 
 import random
@@ -29,6 +30,51 @@ def acknowledgeAlert(request, alert_id):
         return redirect(views.home)
     except Alert.DoesNotExist:
         return views.error(request, {'error' : '404 Not Found', 'message': 'Alert not found.', 'redirect_url': 'home'})
+
+
+#
+# Add a new alert
+#
+@login_required
+def addAlert(request):
+
+    # validate user author
+    if not validateUserAuthorisation(request, 'add_alert'):
+        return views.error(request, {'error': '403 Forbidden', 'message': 'You do not have permission to add alerts.', 'redirect_url': 'home'})
+
+    alert = Alert(
+        interface=get_object_or_404(Interface, id=request.POST.get('interface')),
+        alert_level=get_object_or_404(AlertLevel, id=request.POST.get('alert_level')),
+        message=request.POST.get('message'),
+        status=request.POST.get('status', 'NEW'),
+    )
+
+    response = AlertDatabaseFunctions.add_alert(request, alert)
+
+    # redirect to the home page or error page depending on response
+    return handleResponse(request, response, views.home)
+
+
+#
+# Edit an existing alert
+#
+@login_required
+def editAlert(request, alert_id):
+
+    # validate user author
+    if not validateUserAuthorisation(request, 'change_alert'):
+        return views.error(request, {'error': '403 Forbidden', 'message': 'You do not have permission to edit alerts.', 'redirect_url': 'home'})
+
+    alert = get_object_or_404(Alert, id=alert_id)
+    alert.interface = get_object_or_404(Interface, id=request.POST.get('interface'))
+    alert.alert_level = get_object_or_404(AlertLevel, id=request.POST.get('alert_level'))
+    alert.message = request.POST.get('message')
+    alert.status = request.POST.get('status', alert.status)
+
+    response = AlertDatabaseFunctions.update_alert(request, alert)
+
+    # redirect to the home page or error page depending on response
+    return handleResponse(request, response, views.home)
 
 
 #

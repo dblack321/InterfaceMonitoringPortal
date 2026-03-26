@@ -22,8 +22,8 @@ urlpatterns = [
     path('manageMetric/<str:action>/<int:metric_id>/', views.manageMetric, name='manageMetricEdit'),
    
     # Alert Functions
-    path('acknowledgeAlert/<int:alert_id>/', alertfunctions.acknowledgeAlert, name='acknowledgeAlert'),
     path('removeAlert/<int:alert_id>/', alertfunctions.removeAlert, name='removeAlert'),
+    path('acknowledgeAlert/<int:alert_id>/', alertfunctions.acknowledgeAlert, name='acknowledgeAlert'),
     path('createDummyAlerts/', alertfunctions.createDummyAlerts, name='createDummyAlerts'),
     path('acknowledgeAllAlerts/', alertfunctions.acknowledgeAllAlerts, name='acknowledgeAllAlerts'),
     path('removeAllAlerts/', alertfunctions.removeAllAlerts, name='removeAllAlerts'),
